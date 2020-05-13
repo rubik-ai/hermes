@@ -10,6 +10,7 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
+import org.testng.annotations.Test;
 import pl.allegro.tech.hermes.common.config.Configs;
 import pl.allegro.tech.hermes.test.helper.environment.KafkaStarter;
 import pl.allegro.tech.hermes.test.helper.environment.Starter;
