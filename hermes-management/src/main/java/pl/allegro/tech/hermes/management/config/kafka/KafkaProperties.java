@@ -30,6 +30,11 @@ public class KafkaProperties {
 
     private KafkaConsumer kafkaConsumer = new KafkaConsumer();
 
+    private boolean isSaslEnabled = false;
+    private String saslUsername = "username";
+    private String saslPassword = "password";
+    private String saslJaasConfig;
+
     public static final class KafkaConsumer {
 
         private int cacheExpirationSeconds = 60;
@@ -215,5 +220,23 @@ public class KafkaProperties {
 
     public void setKafkaServerRequestTimeoutMillis(int kafkaServerRequestTimeoutMillis) {
         this.kafkaServerRequestTimeoutMillis = kafkaServerRequestTimeoutMillis;
+    }
+
+    public boolean isSaslEnabled() {
+        return isSaslEnabled;
+    }
+
+    public void setSaslEnabled(boolean saslEnabled) {
+        isSaslEnabled = saslEnabled;
+    }
+
+    public String getSaslJaasConfig() {
+        return "org.apache.kafka.common.security.plain.PlainLoginModule required\n"
+                + "username=\"" + saslUsername + "\"\n"
+                + "password=\"" + saslPassword + "\";";
+    }
+
+    public void setSaslJaasConfig(String saslJaasConfig) {
+        this.saslJaasConfig = saslJaasConfig;
     }
 }

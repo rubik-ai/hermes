@@ -10,14 +10,13 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
-import org.testng.annotations.Test;
 import pl.allegro.tech.hermes.common.config.Configs;
-import pl.allegro.tech.hermes.test.helper.retry.RetryListener;
-import pl.allegro.tech.hermes.test.helper.retry.Retry;
 import pl.allegro.tech.hermes.test.helper.environment.KafkaStarter;
 import pl.allegro.tech.hermes.test.helper.environment.Starter;
 import pl.allegro.tech.hermes.test.helper.environment.WireMockStarter;
 import pl.allegro.tech.hermes.test.helper.environment.ZookeeperStarter;
+import pl.allegro.tech.hermes.test.helper.retry.Retry;
+import pl.allegro.tech.hermes.test.helper.retry.RetryListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +50,8 @@ public class HermesIntegrationEnvironment implements EnvironmentAware {
 
     @BeforeSuite
     public void prepareEnvironment(ITestContext context) throws Exception {
+        System.setProperty("java.security.auth.login.config", "./kafka_server_jaas.conf");
+
         try {
             for (ITestNGMethod method : context.getAllTestMethods()) {
                 method.setRetryAnalyzer(new Retry());
@@ -88,9 +89,10 @@ public class HermesIntegrationEnvironment implements EnvironmentAware {
         return zookeeperClient;
     }
 
-
     @AfterSuite(alwaysRun = true)
     public void cleanEnvironment() throws Exception {
+        System.clearProperty("java.security.auth.login.config");
+
         try {
             ArrayList<Starter<?>> reversedStarters = new ArrayList<>(STARTERS.values());
             Collections.reverse(reversedStarters);

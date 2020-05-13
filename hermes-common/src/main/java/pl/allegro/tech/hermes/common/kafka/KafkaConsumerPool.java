@@ -6,15 +6,15 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import java.util.Properties;
 import kafka.common.TopicAndPartition;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import pl.allegro.tech.hermes.common.broker.BrokerDetails;
 import pl.allegro.tech.hermes.common.broker.BrokerStorage;
+import pl.allegro.tech.hermes.common.exception.BrokerNotFoundForPartitionException;
 
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import pl.allegro.tech.hermes.common.exception.BrokerNotFoundForPartitionException;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG;
@@ -58,7 +58,7 @@ public class KafkaConsumerPool {
             throw new KafkaConsumerPoolException(message, e);
         } catch (UncheckedExecutionException e) {
             if (e.getCause() instanceof BrokerNotFoundForPartitionException) {
-                throw (BrokerNotFoundForPartitionException)e.getCause();
+                throw (BrokerNotFoundForPartitionException) e.getCause();
             }
             throw e;
         }
@@ -91,6 +91,12 @@ public class KafkaConsumerPool {
             props.put(FETCH_MIN_BYTES_CONFIG, poolConfig.getFetchMinBytes());
             props.put("key.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
             props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+
+            if (poolConfig.isSaslEnabled()) {
+                props.put("sasl.mechanism", "PLAIN");
+                props.put("security.protocol", "SASL_PLAINTEXT");
+                props.put("sasl.jaas.config", poolConfig.getSaslJaasConfig());
+            }
             return new KafkaConsumer<>(props);
         }
     }
@@ -101,7 +107,5 @@ public class KafkaConsumerPool {
             notification.getValue().close();
         }
     }
-
-
 }
 
