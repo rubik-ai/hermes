@@ -6,10 +6,13 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.DecoderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.allegro.tech.hermes.api.ContentType;
 import pl.allegro.tech.hermes.api.Topic;
 import pl.allegro.tech.hermes.common.message.converter.AvroBinaryDecoders;
 import pl.allegro.tech.hermes.common.message.converter.AvroRecordToBytesConverter;
+import pl.allegro.tech.hermes.common.message.wrapper.SchemaAwareSerDe;
 import pl.allegro.tech.hermes.consumers.consumer.Message;
 import tech.allegro.schema.json2avro.converter.AvroConversionException;
 import tech.allegro.schema.json2avro.converter.JsonAvroConverter;
@@ -23,7 +26,7 @@ import static pl.allegro.tech.hermes.common.message.wrapper.AvroMetadataMarker.M
 import static pl.allegro.tech.hermes.consumers.consumer.Message.message;
 
 public class AvroToJsonMessageConverter implements MessageConverter {
-
+    private static final Logger logger = LoggerFactory.getLogger(AvroToJsonMessageConverter.class);
     private final JsonAvroConverter converter;
 
     @Inject
@@ -33,6 +36,14 @@ public class AvroToJsonMessageConverter implements MessageConverter {
 
     @Override
     public Message convert(Message message, Topic topic) {
+        if(SchemaAwareSerDe.startsWithMagicByte(message.getData())){
+            return message()
+                    .fromMessage(message)
+                    .withContentType(ContentType.JSON)
+                    .withData(converter.convertToJson(recordWithoutMetadata(SchemaAwareSerDe.deserialize(message.getData()).getPayload(), message.<Schema>getSchema().get().getSchema())))
+                    .withNoSchema()
+                    .build();
+        }
         return message()
                 .fromMessage(message)
                 .withContentType(ContentType.JSON)
