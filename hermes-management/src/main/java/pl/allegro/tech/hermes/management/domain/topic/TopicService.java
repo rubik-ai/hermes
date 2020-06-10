@@ -124,7 +124,14 @@ public class TopicService {
     private void validateSchema(boolean shouldValidate, TopicWithSchema topicWithSchema, Topic topic) {
         if (shouldValidate) {
             schemaService.validateSchema(topic, topicWithSchema.getSchema());
-            boolean schemaAlreadyRegistered = schemaService.getSchema(topic.getQualifiedName()).isPresent();
+//            boolean schemaAlreadyRegistered = schemaService.getSchema(topic.getQualifiedName()).isPresent();
+            Optional<RawSchema> rawSchema = schemaService.getSchema(topic.getQualifiedName());
+            logger.debug("=>suppliedSchema: {}", topicWithSchema.getSchema());
+            rawSchema.ifPresent(schema -> logger.debug("=>existingSchema: {}", schema.value()));
+            boolean schemaAlreadyRegistered = false;
+            if(rawSchema.isPresent() && !rawSchema.get().value().equalsIgnoreCase(topicWithSchema.getSchema())){
+                schemaAlreadyRegistered = true;
+            }
             if (schemaAlreadyRegistered) {
                 throw new TopicSchemaExistsException(topic.getQualifiedName());
             }
