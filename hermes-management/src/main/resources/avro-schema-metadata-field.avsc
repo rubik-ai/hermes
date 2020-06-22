@@ -4,7 +4,7 @@
   "fields" : [
     {
       "name": "__metadata", "default": null,
-      "type": ["null", {"type": "map", "values": "string"}],
+      "type": ["null", {"type": "map", "values": ["string", "null"]}],
       "doc": "Field used in Hermes internals to propagate metadata like hermes-id"
     }
   ]
