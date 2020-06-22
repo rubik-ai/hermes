@@ -215,10 +215,10 @@ public class KafkaConfiguration implements MultipleDcKafkaNamesMappersFactory {
                 kafkaProperties.getKafkaConsumer().getFetchMinBytes(),
                 kafkaProperties.getKafkaConsumer().getNamePrefix(),
                 kafkaProperties.getKafkaConsumer().getConsumerGroupName(),
-                kafkaProperties.isSaslEnabled(),
-                kafkaProperties.getSaslMechanism(),
-                kafkaProperties.getSaslProtocol(),
-                kafkaProperties.getSaslJaasConfig());
+                kafkaProperties.getSasl().isEnabled(),
+                kafkaProperties.getSasl().getMechanism(),
+                kafkaProperties.getSasl().getProtocol(),
+                kafkaProperties.getSasl().getJaasConfig());
 
         return new KafkaConsumerPool(config, brokerStorage);
     }
@@ -228,10 +228,10 @@ public class KafkaConfiguration implements MultipleDcKafkaNamesMappersFactory {
         props.put(BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapKafkaServer());
         props.put(SECURITY_PROTOCOL_CONFIG, DEFAULT_SECURITY_PROTOCOL);
         props.put(REQUEST_TIMEOUT_MS_CONFIG, kafkaProperties.getKafkaServerRequestTimeoutMillis());
-        if (kafkaProperties.isSaslEnabled()) {
-            props.put(SASL_MECHANISM, kafkaProperties.getSaslMechanism());
-            props.put(SECURITY_PROTOCOL_CONFIG, kafkaProperties.getSaslProtocol());
-            props.put(SASL_JAAS_CONFIG, kafkaProperties.getSaslJaasConfig());
+        if (kafkaProperties.getSasl().isEnabled()) {
+            props.put(SASL_MECHANISM, kafkaProperties.getSasl().getMechanism());
+            props.put(SECURITY_PROTOCOL_CONFIG, kafkaProperties.getSasl().getProtocol());
+            props.put(SASL_JAAS_CONFIG, kafkaProperties.getSasl().getJaasConfig());
         }
         return AdminClient.create(props);
     }

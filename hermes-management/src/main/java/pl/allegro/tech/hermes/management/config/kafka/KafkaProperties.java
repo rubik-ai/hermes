@@ -30,12 +30,7 @@ public class KafkaProperties {
 
     private KafkaConsumer kafkaConsumer = new KafkaConsumer();
 
-    private boolean isSaslEnabled = false;
-    private String saslMechanism = "PLAIN";
-    private String saslProtocol = "SASL_PLAINTEXT";
-    private String saslUsername = "admin";
-    private String saslPassword = "admin-secret";
-    private String saslJaasConfig;
+    private KafkaSaslProperties sasl = new KafkaSaslProperties();
 
     public static final class KafkaConsumer {
 
@@ -160,6 +155,14 @@ public class KafkaProperties {
         this.kafkaConsumer = kafkaConsumer;
     }
 
+    public KafkaSaslProperties getSasl() {
+        return sasl;
+    }
+
+    public void setSasl(KafkaSaslProperties sasl) {
+        this.sasl = sasl;
+    }
+
     public String getDatacenter() {
         return datacenter;
     }
@@ -222,39 +225,5 @@ public class KafkaProperties {
 
     public void setKafkaServerRequestTimeoutMillis(int kafkaServerRequestTimeoutMillis) {
         this.kafkaServerRequestTimeoutMillis = kafkaServerRequestTimeoutMillis;
-    }
-
-    public boolean isSaslEnabled() {
-        return isSaslEnabled;
-    }
-
-    public void setSaslEnabled(boolean saslEnabled) {
-        isSaslEnabled = saslEnabled;
-    }
-
-    public String getSaslMechanism() {
-        return saslMechanism;
-    }
-
-    public void setSaslMechanism(String saslMechanism) {
-        this.saslMechanism = saslMechanism;
-    }
-
-    public String getSaslProtocol() {
-        return saslProtocol;
-    }
-
-    public void setSaslProtocol(String saslProtocol) {
-        this.saslProtocol = saslProtocol;
-    }
-
-    public String getSaslJaasConfig() {
-        return "org.apache.kafka.common.security.plain.PlainLoginModule required\n"
-                + "username=\"" + saslUsername + "\"\n"
-                + "password=\"" + saslPassword + "\";";
-    }
-
-    public void setSaslJaasConfig(String saslJaasConfig) {
-        this.saslJaasConfig = saslJaasConfig;
     }
 }
