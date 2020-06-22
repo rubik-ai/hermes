@@ -25,12 +25,13 @@ docker build -t rubiklabs/hermes .
 docker run --rm -it \
                 -e KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
                 -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 \
+                -e HERMES_MANAGEMENT_OPTS="-Dschema.repository.serverUrl=http://registry:8081" \
                 -p 8090:8090 \
                 rubiklabs/hermes:latest /opt/hermes-management/bin/hermes-management
 
 ## Run Consumer
 docker run --rm -it \
-                -e HERMES_CONSUMERS_OPTS="-Dzookeeper.connect.string=zookeeper:2181,-Dkafka.broker.list=kafka:9092" \
+                -e HERMES_CONSUMERS_OPTS="-Dzookeeper.connect.string=zk:2181 -Dkafka.broker.list=kafka:9092 -Dschema.repository.serverUrl=http://registry:8081" \
                 -p 8000:8000 \
                 rubiklabs/hermes:latest /opt/hermes-consumers/bin/hermes-consumers
 
