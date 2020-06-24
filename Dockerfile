@@ -9,9 +9,9 @@ ENV MANAGEMENT_ARCHIVE_NAME="hermes-management-latest.zip"
 
 ENV CONSUMERS_ARCHIVE_NAME="hermes-consumer-latest.zip"
 
-ADD hermes-management/build/distributions/hermes-management-1.4.7-SNAPSHOT.zip "/tmp/${MANAGEMENT_ARCHIVE_NAME}"
+ADD hermes-management/build/distributions/hermes-management-*-SNAPSHOT.zip "/tmp/${MANAGEMENT_ARCHIVE_NAME}"
 
-ADD hermes-consumers/build/distributions/hermes-consumers-1.4.7-SNAPSHOT.zip "/tmp/${CONSUMERS_ARCHIVE_NAME}"
+ADD hermes-consumers/build/distributions/hermes-consumers-*-SNAPSHOT.zip "/tmp/${CONSUMERS_ARCHIVE_NAME}"
 
 RUN  unzip -q "/tmp/${MANAGEMENT_ARCHIVE_NAME}" -d /opt \
   && rm "/tmp/${MANAGEMENT_ARCHIVE_NAME}" \

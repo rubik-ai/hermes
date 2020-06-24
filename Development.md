@@ -19,7 +19,7 @@ cd hermes-frontend/build/distributions/ && unzip hermes-frontend-1.4.7-SNAPSHOT.
 # Run with docker
 
 ## Build docker image
-docker build -t rubiklabs/hermes .
+docker build -t rubiklabs/hermes:0.0.1 .
 
 ## Run Management
 docker run --rm -it \
