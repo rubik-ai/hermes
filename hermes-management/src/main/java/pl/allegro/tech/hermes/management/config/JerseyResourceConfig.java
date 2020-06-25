@@ -21,7 +21,7 @@ public class JerseyResourceConfig extends ResourceConfig {
     public JerseyResourceConfig(JerseyProperties jerseyProperties) {
         packages(true, "pl.allegro.tech.hermes.management.api");
 
-        for(String packageToScan : jerseyProperties.getPackagesToScan()) {
+        for (String packageToScan : jerseyProperties.getPackagesToScan()) {
             packages(true, packageToScan);
             logger.info("Scanning Jersey resources in: {}", packageToScan);
         }
@@ -29,6 +29,7 @@ public class JerseyResourceConfig extends ResourceConfig {
         property(ServletProperties.FILTER_STATIC_CONTENT_REGEX, jerseyProperties.getFilterStaticContentRegexp());
         register(RolesAllowedDynamicFeature.class);
     }
+
     @PostConstruct
     public void init() {
         // Register components where DI is needed
@@ -44,10 +45,19 @@ public class JerseyResourceConfig extends ResourceConfig {
         config.setTitle("*Hermes Apis*");
         config.setVersion("v1");
         config.setContact("hermes-pubsub");
-        config.setSchemes(new String[] { "http", "https" });
-        config.setBasePath("/");
+        config.setSchemes(new String[]{"http", "https"});
+        config.setBasePath(getHermesBasePath());
         config.setResourcePackage("pl.allegro.tech.hermes.management.api");
         config.setPrettyPrint(true);
         config.setScan(true);
+    }
+
+    //todo: temporary fix.
+    private String getHermesBasePath() {
+        String hermesBasePath = System.getenv("HERMES_BASE_PATH");
+        if (hermesBasePath == null || hermesBasePath.isEmpty()) {
+            hermesBasePath = "/";
+        }
+        return hermesBasePath;
     }
 }
