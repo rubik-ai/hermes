@@ -39,6 +39,10 @@ public class MessageContentWrapper {
     }
 
     public UnwrappedMessageContent unwrapAvro(byte[] data, Topic topic, Integer schemaVersion) {
+        // todo: Metis - removing the magic byte to deal with confluent payloads. Since SchemaAwarePayload does not honor schema id in magic byte
+        if(SchemaAwareSerDe.startsWithMagicByte(data)){
+            data = SchemaAwareSerDe.deserialize(data).getPayload();
+        }
         for (AvroMessageContentUnwrapper unwrapper : avroMessageContentUnwrappers) {
             if (unwrapper.isApplicable(data, topic, schemaVersion)) {
                 AvroMessageContentUnwrapperResult result = unwrapper.unwrap(data, topic, schemaVersion);

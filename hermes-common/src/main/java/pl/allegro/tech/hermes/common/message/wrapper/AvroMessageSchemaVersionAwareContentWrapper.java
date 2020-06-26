@@ -39,10 +39,7 @@ public class AvroMessageSchemaVersionAwareContentWrapper implements AvroMessageC
             deserializationUsingSchemaVersionAware.inc();
 
             SchemaAwarePayload payload = SchemaAwareSerDe.deserialize(data);
-//            CompiledSchema<Schema> avroSchema = schemaRepository.getAvroSchema(topic, payload.getSchemaVersion());
-            // Metis-change
-            CompiledSchema<Schema> avroSchema = schemaRepository.getLatestAvroSchema(topic);
-
+            CompiledSchema<Schema> avroSchema = schemaRepository.getAvroSchema(topic, payload.getSchemaVersion());
             return AvroMessageContentUnwrapperResult.success(avroMessageContentWrapper.unwrapContent(payload.getPayload(), avroSchema));
         } catch (Exception ex) {
             logger.warn("Could not deserialize schema version aware payload for topic [{}] - falling back", topic.getQualifiedName(), ex);
