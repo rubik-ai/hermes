@@ -1,5 +1,6 @@
 package pl.allegro.tech.hermes.management.api;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static pl.allegro.tech.hermes.api.TopicName.fromQualifiedName;
 
 @Path("topics/{topicName}/subscriptions")
+@Api(value = "/subscriptions", description = "Get user subscriptions")
 public class SubscriptionsEndpoint {
 
     private final SubscriptionService subscriptionService;
