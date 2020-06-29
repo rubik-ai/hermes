@@ -20,6 +20,10 @@ public class TopicBuilder {
 
     private String description = "description";
 
+    private Integer partitions = 10;
+
+    private Integer replicationFactor = 1;
+
     private OwnerId owner = new OwnerId("Plaintext", "some team");
 
     private boolean jsonToAvroDryRunEnabled = false;
@@ -70,7 +74,7 @@ public class TopicBuilder {
 
     public Topic build() {
         return new Topic(
-                name, description, owner, retentionTime, migratedFromJsonType, ack, trackingEnabled, contentType,
+                name, description, partitions, replicationFactor, owner, retentionTime, migratedFromJsonType, ack, trackingEnabled, contentType,
                 jsonToAvroDryRunEnabled, schemaVersionAwareSerialization, maxMessageSize,
                 new PublishingAuth(publishers, authEnabled, unauthenticatedAccessEnabled), subscribingRestricted,
                 offlineStorage, null, null

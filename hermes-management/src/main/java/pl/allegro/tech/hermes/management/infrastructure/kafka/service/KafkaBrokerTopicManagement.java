@@ -31,12 +31,12 @@ public class KafkaBrokerTopicManagement implements BrokerTopicManagement {
     }
 
     @Override
-    public void createTopic(Topic topic, Integer partitions, Integer replicationFactor) {
+    public void createTopic(Topic topic) {
         Properties config = createTopicConfig(topic.getRetentionTime().getDuration(), topicProperties);
-        if(partitions>0){
-            topicProperties.setPartitions(partitions);
-        }if (replicationFactor>0){
-            topicProperties.setReplicationFactor(replicationFactor);
+        if(topic.getPartitions()>0){
+            topicProperties.setPartitions(topic.getPartitions());
+        }if (topic.getReplicationFactor()>0){
+            topicProperties.setReplicationFactor(topic.getReplicationFactor());
         }
         kafkaNamesMapper.toKafkaTopics(topic).forEach(k ->
                 adminZkClient.createTopic(

@@ -46,6 +46,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
+import static javax.ws.rs.core.Response.seeOther;
 import static javax.ws.rs.core.Response.status;
 
 @Component
@@ -95,11 +96,10 @@ public class TopicsEndpoint {
     @Produces(APPLICATION_JSON)
     @RolesAllowed(Roles.ANY)
     @ApiOperation(value = "Create topic", httpMethod = HttpMethod.POST)
-    public Response create(TopicWithSchema topicWithSchema, @QueryParam("partitions") @DefaultValue("10") int partitions,
-                           @QueryParam("replicationFactor") @DefaultValue("1") int replicationFactor, @Context ContainerRequestContext requestContext) {
+    public Response create(TopicWithSchema topicWithSchema, @Context ContainerRequestContext requestContext) {
         String createdBy = requestContext.getSecurityContext().getUserPrincipal().getName();
         CreatorRights isAllowedToManage = checkedTopic -> managementRights.isUserAllowedToManageTopic(checkedTopic, requestContext);
-        topicService.createTopicWithSchema(topicWithSchema, createdBy, isAllowedToManage, partitions, replicationFactor);
+        topicService.createTopicWithSchema(topicWithSchema, createdBy, isAllowedToManage);
         return status(Response.Status.CREATED).build();
     }
 

@@ -26,6 +26,15 @@ public class Topic {
     @NotNull
     private OwnerId owner;
 
+    @Valid
+    @NotNull
+    private Integer partitions;
+
+    @Valid
+    @NotNull
+    private Integer replicationFactor;
+
+
     private boolean jsonToAvroDryRunEnabled = false;
 
     @NotNull
@@ -66,13 +75,15 @@ public class Topic {
 
     private Instant modifiedAt;
 
-    public Topic(TopicName name, String description, OwnerId owner, RetentionTime retentionTime,
+    public Topic(TopicName name, String description, Integer partitions, Integer replicationFactor, OwnerId owner, RetentionTime retentionTime,
                  boolean migratedFromJsonType, Ack ack, boolean trackingEnabled, ContentType contentType,
                  boolean jsonToAvroDryRunEnabled, boolean schemaVersionAwareSerializationEnabled,
                  int maxMessageSize, PublishingAuth publishingAuth, boolean subscribingRestricted,
                  TopicDataOfflineStorage offlineStorage, Instant createdAt, Instant modifiedAt) {
         this.name = name;
         this.description = description;
+        this.partitions = partitions;
+        this.replicationFactor = replicationFactor;
         this.owner = owner;
         this.retentionTime = retentionTime;
         this.ack = (ack == null ? Ack.LEADER : ack);
@@ -93,6 +104,8 @@ public class Topic {
     public Topic(
             @JsonProperty("name") String qualifiedName,
             @JsonProperty("description") String description,
+            @JsonProperty("partitions") Integer partitions,
+            @JsonProperty("replicationFactor") Integer replicationFactor,
             @JsonProperty("owner") OwnerId owner,
             @JsonProperty("retentionTime") RetentionTime retentionTime,
             @JsonProperty("jsonToAvroDryRun") boolean jsonToAvroDryRunEnabled,
@@ -108,7 +121,7 @@ public class Topic {
             @JsonProperty("createdAt") Instant createdAt,
             @JsonProperty("modifiedAt") Instant modifiedAt
     ) {
-        this(TopicName.fromQualifiedName(qualifiedName), description, owner, retentionTime, migratedFromJsonType, ack,
+        this(TopicName.fromQualifiedName(qualifiedName), description, partitions, replicationFactor, owner, retentionTime, migratedFromJsonType, ack,
                 trackingEnabled, contentType, jsonToAvroDryRunEnabled, schemaVersionAwareSerializationEnabled,
                 maxMessageSize == null ? DEFAULT_MAX_MESSAGE_SIZE : maxMessageSize,
                 publishingAuth == null ? PublishingAuth.disabled() : publishingAuth,
@@ -249,6 +262,22 @@ public class Topic {
 
     public void setModifiedAt(Long modifiedAt) {
         this.modifiedAt = Instant.ofEpochMilli(modifiedAt);
+    }
+
+    public Integer getPartitions() {
+        return partitions;
+    }
+
+    public void setPartitions(Integer partitions) {
+        this.partitions = partitions;
+    }
+
+    public Integer getReplicationFactor() {
+        return replicationFactor;
+    }
+
+    public void setReplicationFactor(Integer replicationFactor) {
+        this.replicationFactor = replicationFactor;
     }
 
     @Override

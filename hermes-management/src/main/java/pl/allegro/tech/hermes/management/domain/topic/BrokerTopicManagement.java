@@ -4,7 +4,7 @@ import pl.allegro.tech.hermes.api.Topic;
 
 public interface BrokerTopicManagement {
 
-    void createTopic(Topic topic, Integer partitions, Integer replicationFactor);
+    void createTopic(Topic topic);
 
     void removeTopic(Topic topic);
 

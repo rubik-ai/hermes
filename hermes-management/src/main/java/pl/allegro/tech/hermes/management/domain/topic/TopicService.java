@@ -103,7 +103,7 @@ public class TopicService {
         this.topicOwnerCache = topicOwnerCache;
     }
 
-    public void createTopicWithSchema(TopicWithSchema topicWithSchema, String createdBy, CreatorRights isAllowedToManage, Integer partitions, Integer replicationFactor) {
+    public void createTopicWithSchema(TopicWithSchema topicWithSchema, String createdBy, CreatorRights isAllowedToManage) {
         Topic topic = topicWithSchema.getTopic();
         topicValidator.ensureCreatedTopicIsValid(topic, isAllowedToManage);
         ensureTopicDoesNotExist(topic);
@@ -113,7 +113,7 @@ public class TopicService {
 
         validateSchema(validateAndRegisterSchema, topicWithSchema, topic);
         registerAvroSchema(validateAndRegisterSchema, topicWithSchema, createdBy);
-        createTopic(topic, createdBy, isAllowedToManage, partitions, replicationFactor);
+        createTopic(topic, createdBy, isAllowedToManage);
     }
 
     private void ensureTopicDoesNotExist(Topic topic) {
@@ -151,12 +151,12 @@ public class TopicService {
         }
     }
 
-    private void createTopic(Topic topic, String createdBy, CreatorRights creatorRights, Integer partitions, Integer replicationFactor) {
+    private void createTopic(Topic topic, String createdBy, CreatorRights creatorRights) {
         topicValidator.ensureCreatedTopicIsValid(topic, creatorRights);
         multiDcExecutor.execute(new CreateTopicRepositoryCommand(topic));
 
         if (!multiDCAwareService.topicExists(topic)) {
-            createTopicInBrokers(topic, partitions, replicationFactor);
+            createTopicInBrokers(topic);
             auditor.objectCreated(createdBy, topic);
             topicOwnerCache.onCreatedTopic(topic);
         } else {
@@ -164,11 +164,11 @@ public class TopicService {
         }
     }
 
-    private void createTopicInBrokers(Topic topic, Integer partitions, Integer replicationFactor) {
+    private void createTopicInBrokers(Topic topic) {
         try {
 
             multiDCAwareService.manageTopic(brokerTopicManagement ->
-                    brokerTopicManagement.createTopic(topic, partitions, replicationFactor)
+                    brokerTopicManagement.createTopic(topic)
             );
         } catch (Exception exception) {
             logger.error(
