@@ -17,6 +17,7 @@ import pl.allegro.tech.hermes.api.TopicNameWithMetrics;
 import pl.allegro.tech.hermes.api.TopicWithSchema;
 import pl.allegro.tech.hermes.api.helpers.Patch;
 import pl.allegro.tech.hermes.domain.topic.TopicAlreadyExistsException;
+import pl.allegro.tech.hermes.domain.topic.TopicConfigurationException;
 import pl.allegro.tech.hermes.domain.topic.TopicRepository;
 import pl.allegro.tech.hermes.domain.topic.preview.MessagePreview;
 import pl.allegro.tech.hermes.domain.topic.preview.MessagePreviewRepository;
@@ -102,7 +103,7 @@ public class TopicService {
         this.topicOwnerCache = topicOwnerCache;
     }
 
-    public void createTopicWithSchema(TopicWithSchema topicWithSchema, String createdBy, CreatorRights isAllowedToManage) {
+    public void createTopicWithSchema(TopicWithSchema topicWithSchema, String createdBy, CreatorRights isAllowedToManage, Integer partitions, Integer replicationFactor) {
         Topic topic = topicWithSchema.getTopic();
         topicValidator.ensureCreatedTopicIsValid(topic, isAllowedToManage);
         ensureTopicDoesNotExist(topic);
@@ -112,7 +113,7 @@ public class TopicService {
 
         validateSchema(validateAndRegisterSchema, topicWithSchema, topic);
         registerAvroSchema(validateAndRegisterSchema, topicWithSchema, createdBy);
-        createTopic(topic, createdBy, isAllowedToManage);
+        createTopic(topic, createdBy, isAllowedToManage, partitions, replicationFactor);
     }
 
     private void ensureTopicDoesNotExist(Topic topic) {
@@ -150,12 +151,12 @@ public class TopicService {
         }
     }
 
-    private void createTopic(Topic topic, String createdBy, CreatorRights creatorRights) {
+    private void createTopic(Topic topic, String createdBy, CreatorRights creatorRights, Integer partitions, Integer replicationFactor) {
         topicValidator.ensureCreatedTopicIsValid(topic, creatorRights);
         multiDcExecutor.execute(new CreateTopicRepositoryCommand(topic));
 
         if (!multiDCAwareService.topicExists(topic)) {
-            createTopicInBrokers(topic);
+            createTopicInBrokers(topic, partitions, replicationFactor);
             auditor.objectCreated(createdBy, topic);
             topicOwnerCache.onCreatedTopic(topic);
         } else {
@@ -163,10 +164,11 @@ public class TopicService {
         }
     }
 
-    private void createTopicInBrokers(Topic topic) {
+    private void createTopicInBrokers(Topic topic, Integer partitions, Integer replicationFactor) {
         try {
+
             multiDCAwareService.manageTopic(brokerTopicManagement ->
-                    brokerTopicManagement.createTopic(topic)
+                    brokerTopicManagement.createTopic(topic, partitions, replicationFactor)
             );
         } catch (Exception exception) {
             logger.error(
@@ -174,6 +176,7 @@ public class TopicService {
                     exception
             );
             multiDcExecutor.execute(new RemoveTopicRepositoryCommand(topic.getName()));
+            throw new TopicConfigurationException(exception);
         }
     }
 

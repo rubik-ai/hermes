@@ -95,10 +95,11 @@ public class TopicsEndpoint {
     @Produces(APPLICATION_JSON)
     @RolesAllowed(Roles.ANY)
     @ApiOperation(value = "Create topic", httpMethod = HttpMethod.POST)
-    public Response create(TopicWithSchema topicWithSchema, @Context ContainerRequestContext requestContext) {
+    public Response create(TopicWithSchema topicWithSchema, @QueryParam("partitions") @DefaultValue("10") int partitions,
+                           @QueryParam("replicationFactor") @DefaultValue("1") int replicationFactor, @Context ContainerRequestContext requestContext) {
         String createdBy = requestContext.getSecurityContext().getUserPrincipal().getName();
         CreatorRights isAllowedToManage = checkedTopic -> managementRights.isUserAllowedToManageTopic(checkedTopic, requestContext);
-        topicService.createTopicWithSchema(topicWithSchema, createdBy, isAllowedToManage);
+        topicService.createTopicWithSchema(topicWithSchema, createdBy, isAllowedToManage, partitions, replicationFactor);
         return status(Response.Status.CREATED).build();
     }
 
