@@ -38,8 +38,6 @@ public class KafkaBrokerTopicManagement implements BrokerTopicManagement {
         }if (replicationFactor>0){
             topicProperties.setReplicationFactor(replicationFactor);
         }
-        System.out.println("==>"+ topicProperties.getPartitions());
-        System.out.println("==>"+ topicProperties.getReplicationFactor());
         kafkaNamesMapper.toKafkaTopics(topic).forEach(k ->
                 adminZkClient.createTopic(
                         k.name().asString(),
