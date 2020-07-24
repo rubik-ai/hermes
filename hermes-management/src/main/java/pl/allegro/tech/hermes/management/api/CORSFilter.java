@@ -32,6 +32,7 @@ public class CORSFilter implements ContainerResponseFilter {
         if (originList.contains(origin)) {
             headers.add("Access-Control-Allow-Origin", origin);
         }
+        headers.add("Access-Control-Allow-Credentials", true);
         headers.add("Access-Control-Allow-Methods", "OPTIONS,POST,PUT,GET,HEAD,DELETE");
         headers.add("Access-Control-Max-Age", "1209600");
         headers.addAll(
